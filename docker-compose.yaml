@@ -3,6 +3,7 @@ version: '3.7'
 services:
 
   caddy:
+    restart: 'unless-stopped'
     container_name: caddy
     image: caddy:2-alpine
     network_mode: host
@@ -19,6 +20,7 @@ services:
       - NET_BIND_SERVICE
 
   redis:
+    restart: 'unless-stopped'
     container_name: redis
     image: "redis:alpine"
     command: redis-server --save "" --appendonly "no"
@@ -34,16 +36,17 @@ services:
       - DAC_OVERRIDE
 
   searxng:
+    restart: 'unless-stopped'
     container_name: searxng
     image: searxng/searxng:latest
     networks:
       - searxng
     ports:
-     - "127.0.0.1:8080:8080"
+     - "127.0.0.1:1001:8080"
     volumes:
       - ./searxng:/etc/searxng:rw
     environment:
-      - SEARXNG_BASE_URL=https://${SEARXNG_HOSTNAME:-localhost}/
+      - SEARXNG_BASE_URL=http://${SEARXNG_HOSTNAME:-localhost:1001}/
     cap_drop:
       - ALL
     cap_add:
